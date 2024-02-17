@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Point;
 import android.graphics.RectF;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
@@ -17,7 +16,6 @@ import android.os.HandlerThread;
 import android.os.Vibrator;
 import android.util.Log;
 import android.util.Size;
-import android.view.Display;
 import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
@@ -32,7 +30,6 @@ import android.app.Fragment;
 
 import com.example.imageclassifier.camera.CameraFragment;
 import com.example.imageclassifier.tflite.Detector;
-import com.example.imageclassifier.utils.Notifier;
 import com.example.imageclassifier.utils.YuvToRgbConverter;
 
 import org.tensorflow.lite.support.label.Category;
@@ -67,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
     private List result_detected = null;
     private int maxResult = 3;
 
-    private Notifier notifier;
     private float current_centerX = 0.0f;
     private float current_centerY = 0.0f;
     private float current_width = 0.0f;
@@ -101,8 +97,6 @@ public class MainActivity extends AppCompatActivity {
         // 물체를 탐지하는 class Detector, 객체 선언 및 초기화
         dtr = new Detector(this, maxResult);
         dtr.initDetector();
-
-        notifier = new Notifier(50.0f);
 
         // 카메라 접근 권한 획득
         if(checkSelfPermission(CAMERA_PERMISSION)
