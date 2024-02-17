@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
@@ -16,6 +17,7 @@ import android.os.HandlerThread;
 import android.os.Vibrator;
 import android.util.Log;
 import android.util.Size;
+import android.view.Display;
 import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
@@ -30,6 +32,7 @@ import android.app.Fragment;
 
 import com.example.imageclassifier.camera.CameraFragment;
 import com.example.imageclassifier.tflite.Detector;
+import com.example.imageclassifier.utils.Notifier;
 import com.example.imageclassifier.utils.YuvToRgbConverter;
 
 import org.tensorflow.lite.support.label.Category;
@@ -45,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView textView;
     private TextView editText;
-
+    private TextView clostText;
     private Button button;
     private Vibrator vibrator;
     private Detector dtr;
@@ -64,11 +67,13 @@ public class MainActivity extends AppCompatActivity {
     private List result_detected = null;
     private int maxResult = 3;
 
+    private Notifier notifier;
     private float current_centerX = 0.0f;
     private float current_centerY = 0.0f;
+    private float current_width = 0.0f;
     private float prior_centerX = 0.0f;
     private float prior_centerY = 0.0f;
-
+    private float prior_width = 0.0f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
         textView = findViewById(R.id.textView);
         editText = (EditText)findViewById(R.id.inputView);
         button = (Button)findViewById(R.id.button);
+        clostText = findViewById(R.id.CloseText);
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,6 +101,8 @@ public class MainActivity extends AppCompatActivity {
         // 물체를 탐지하는 class Detector, 객체 선언 및 초기화
         dtr = new Detector(this, maxResult);
         dtr.initDetector();
+
+        notifier = new Notifier(50.0f);
 
         // 카메라 접근 권한 획득
         if(checkSelfPermission(CAMERA_PERMISSION)
@@ -274,31 +283,43 @@ public class MainActivity extends AppCompatActivity {
                         Category ct = dt.getCategories().get(0);
 
                         if(wantedObject.equals(ct.getLabel().toString())) {
-                            vibrator.vibrate(1000);
+
                             current_centerX = rf.centerX();
                             current_centerY = rf.centerY();
+                            current_width = rf.width() * rf.height();
 
-                            Log.v("object", " " + ct.getLabel().toString());
-                            if((current_centerX - prior_centerX) > 50.0f) {
-                                Log.v("movement", "left");
-                                textView.setText("Left");
+                            // Log.v("object", " " + ct.getLabel().toString());
+                            if((Math.abs(current_centerX - prior_centerX) > Math.abs(current_centerY - prior_centerY))
+                            && Math.abs(current_centerX - prior_centerX) > 25.0f) {
+                                if(current_centerX > 160.0) {
+                                    textView.setText("Left");
+                                }
+                                else if(current_centerX <= 160.0) {
+                                    textView.setText("Right");
+                                }
                             }
-                            else if ((current_centerX - prior_centerX) <= -50.0f) {
-                                Log.v("movement", "right");
-                                textView.setText("Right");
+                            else if((Math.abs(current_centerX - prior_centerX) <= Math.abs(current_centerY - prior_centerY))
+                                    && Math.abs(current_centerY - prior_centerY) > 25.0f) {
+                                if(current_centerY > 160.0) {
+                                    textView.setText("Top");
+                                }
+                                else if(current_centerY <= 160.0) {
+                                    textView.setText("Bottom");
+                                }
                             }
-                            else if((current_centerY - prior_centerY) > 50.0f) {
-                                Log.v("movement", "top");
-                                textView.setText("Top");
+
+                            if (current_width > previewHeight * previewWidth * 0.3) {
+                                clostText.setText("Here!");
+                                vibrator.vibrate(1000);
                             }
-                            else if((current_centerY - prior_centerY) <= -50.0f) {
-                                Log.v("movement", "bottom");
-                                textView.setText("Bottom");
+                            else {
+                                clostText.setText("Near here but not yet");
                             }
                         }
                     }
                     prior_centerX = current_centerX;
                     prior_centerY = current_centerY;
+                    prior_width = current_width;
                 });
             }
 
