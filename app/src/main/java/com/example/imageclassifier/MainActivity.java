@@ -23,6 +23,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.speech.tts.TextToSpeech;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -71,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
     private float prior_centerY = 0.0f;
     private float prior_width = 0.0f;
 
+    private TextToSpeech textToSpeech;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(null);
@@ -106,6 +110,13 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions(new String[]{CAMERA_PERMISSION},
                     PERMISSION_REQUEST_CODE);
         }
+
+        // TextToSpeech 객체 초기화
+        textToSpeech = new TextToSpeech(this, status -> {
+            if (status == TextToSpeech.SUCCESS) {
+                textToSpeech.setLanguage(Locale.US); // 언어 설정
+            }
+        });
     }
 
     @Override
@@ -117,6 +128,12 @@ public class MainActivity extends AppCompatActivity {
         finishAndRemoveTask();
         android.os.Process.killProcess(android.os.Process.myPid());
         super.onDestroy();
+
+        // TextToSpeech 리소스 해제
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
     }
 
     @Override
@@ -231,6 +248,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 방향 정보를 음성으로 읽어주는 메소드 추가
+    private void speakDirection(String direction) {
+        textToSpeech.speak(direction, TextToSpeech.QUEUE_FLUSH, null, null);
+    }
+
     /*주요 동작이 벌어지는 함수*/
     protected void processImage(ImageReader reader) {
         // setFragment (GOTO : 159 번째 줄) -> previewWidth와 previewHeight 의 값 정해짐
@@ -271,6 +293,7 @@ public class MainActivity extends AppCompatActivity {
                 int result_len = result_detected.size();
                 // UI를 변경하는 쓰레드, 여기서 UI 를 변경해야 함. 그렇지 않으면 오류
                 runOnUiThread(() -> {
+                    String directionText = "";
                     for (int idx = 0; idx < result_len; idx++) {
                         Detection dt = (Detection) result_detected.get(idx);
                         RectF rf = dt.getBoundingBox();
@@ -287,18 +310,22 @@ public class MainActivity extends AppCompatActivity {
                             && Math.abs(current_centerX - prior_centerX) > 25.0f) {
                                 if(current_centerX > 160.0) {
                                     textView.setText("Left");
+                                    directionText = "Left";
                                 }
                                 else if(current_centerX <= 160.0) {
                                     textView.setText("Right");
+                                    directionText = "Right";
                                 }
                             }
                             else if((Math.abs(current_centerX - prior_centerX) <= Math.abs(current_centerY - prior_centerY))
                                     && Math.abs(current_centerY - prior_centerY) > 25.0f) {
                                 if(current_centerY > 160.0) {
                                     textView.setText("Top");
+                                    directionText = "Top";
                                 }
                                 else if(current_centerY <= 160.0) {
                                     textView.setText("Bottom");
+                                    directionText = "Bottom";
                                 }
                             }
 
@@ -314,6 +341,11 @@ public class MainActivity extends AppCompatActivity {
                     prior_centerX = current_centerX;
                     prior_centerY = current_centerY;
                     prior_width = current_width;
+
+                    if (!directionText.isEmpty()) {
+                        speakDirection(directionText); // 방향 텍스트를 음성으로 읽어줌
+                    }
+
                 });
             }
 
