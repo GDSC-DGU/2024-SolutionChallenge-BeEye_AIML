@@ -248,9 +248,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 멤버 변수로 마지막으로 읽은 방향과 음성 출력 딜레이를 관리하는 변수 추가
+    private String lastSpokenDirection = "";
+    private final long SPEECH_DELAY_MS = 1000; // 1초 딜레이
+    private long lastSpeechTime = 0;
+
     // 방향 정보를 음성으로 읽어주는 메소드 추가
+    // 방향이 이전과 같지 않거나 1초가 지났을 때만 출력
     private void speakDirection(String direction) {
-        textToSpeech.speak(direction, TextToSpeech.QUEUE_FLUSH, null, null);
+        long currentTime = System.currentTimeMillis();
+        if (!direction.equals(lastSpokenDirection) || (currentTime - lastSpeechTime) >= SPEECH_DELAY_MS) {
+            textToSpeech.speak(direction, TextToSpeech.QUEUE_FLUSH, null, null);
+            lastSpokenDirection = direction;
+            lastSpeechTime = currentTime;
+        }
     }
 
     /*주요 동작이 벌어지는 함수*/
