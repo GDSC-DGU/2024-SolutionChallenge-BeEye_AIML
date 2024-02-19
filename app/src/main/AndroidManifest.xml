@@ -2,12 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-feature android:name="android.hardware.camera"
-        android:required="true" />
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE"/>
-    
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -15,14 +14,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"
-            android:screenOrientation="portrait" >
+
+        <!-- SplashActivity 추가. 인텐트 필터로 LAUNCHER 설정하여 앱 시작 시 처음 실행되는 액티비티로 지정 -->
+        <activity android:name=".splash.SplashActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- MainActivity 정의. 기존의 인텐트 필터를 제거하여 SplashActivity가 앱의 진입점이 되도록 함 -->
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>
