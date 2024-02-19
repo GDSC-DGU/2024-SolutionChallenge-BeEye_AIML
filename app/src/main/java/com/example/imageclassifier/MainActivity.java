@@ -10,9 +10,11 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.media.Image;
 import android.media.ImageReader;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Log;
 import android.util.Size;
@@ -257,9 +259,9 @@ public class MainActivity extends AppCompatActivity {
     // 방향이 이전과 같지 않거나 1초가 지났을 때만 출력
     private void speakDirection(String direction) {
         long currentTime = System.currentTimeMillis();
-        if (!direction.equals(lastSpokenDirection) || (currentTime - lastSpeechTime) >= SPEECH_DELAY_MS) {
+        // 방향이 같더라도 마지막 음성 출력 후 일정 시간이 지났으면 다시 음성 출력
+        if ((currentTime - lastSpeechTime) >= SPEECH_DELAY_MS) {
             textToSpeech.speak(direction, TextToSpeech.QUEUE_FLUSH, null, null);
-            lastSpokenDirection = direction;
             lastSpeechTime = currentTime;
         }
     }
@@ -342,10 +344,23 @@ public class MainActivity extends AppCompatActivity {
 
                             if (current_width > previewHeight * previewWidth * 0.3) {
                                 clostText.setText("Here!");
-                                vibrator.vibrate(1000);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                    VibrationEffect effect = VibrationEffect.createOneShot(1000, 200);
+                                    vibrator.vibrate(effect);
+                                }
+                                else{
+                                    vibrator.vibrate(1000);
+                                }
                             }
                             else {
                                 clostText.setText("Near here but not yet");
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                    VibrationEffect effect = VibrationEffect.createOneShot(1000, 30);
+                                    vibrator.vibrate(effect);
+                                }
+                                else{
+                                    vibrator.vibrate(1000);
+                                }
                             }
                         }
                     }
