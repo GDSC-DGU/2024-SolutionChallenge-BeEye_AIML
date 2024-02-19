@@ -17,6 +17,7 @@
 
         <!-- SplashActivity 추가. 인텐트 필터로 LAUNCHER 설정하여 앱 시작 시 처음 실행되는 액티비티로 지정 -->
         <activity android:name=".splash.SplashActivity"
+            android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

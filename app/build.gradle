@@ -1,13 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    compileSdkVersion 33 // 업데이트
 
     defaultConfig {
         applicationId "com.example.imageclassifier"
         minSdkVersion 23
-        targetSdkVersion 30
+        targetSdkVersion 33 // 업데이트
         versionCode 1
         versionName "1.0"
 
@@ -40,8 +39,6 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-//    implementation 'org.tensorflow:tensorflow-lite:2.7.0'
-//    implementation 'org.tensorflow:tensorflow-lite-support:0.3.0'
     implementation 'org.tensorflow:tensorflow-lite-task-vision:0.4.0'
     implementation 'org.tensorflow:tensorflow-lite-gpu-delegate-plugin:0.4.0'
 }
