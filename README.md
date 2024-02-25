@@ -10,4 +10,10 @@ Usage
 1. Turn on your app, and insert the object you want to detection
 - You can insert your object with normal keyboard, voice and talk back key board.
 <img width="80%" src="https://github.com/GDSC-DGU/2024-SolutionChallenge-BeEye_AIML/assets/99014066/f516f1a2-2ae7-4355-ac29-bbde4c9476bf.gif"/>
-<img width="80%" src="![my_video2](https://github.com/GDSC-DGU/2024-SolutionChallenge-BeEye_AIML/assets/99014066/c1ae5f88-c483-4d86-b6e4-3cd7a8e8630d.gif)"/>
+<img width="80%" src="https://github.com/GDSC-DGU/2024-SolutionChallenge-BeEye_AIML/assets/99014066/e1d391d2-d82c-4adb-bacf-acaca422982e.gif"/>
+
+2. Follow the voice feed back, it will nofiy the direction you have to move
+<img width="80%" src="https://github.com/GDSC-DGU/2024-SolutionChallenge-BeEye_AIML/assets/99014066/1cd907f9-9464-4791-8475-d0c2b4eb7ae5.gif"/>
+
+3. Set direction, and go get your object!
+<img width="80%" src="https://github.com/GDSC-DGU/2024-SolutionChallenge-BeEye_AIML/assets/99014066/2e0eab41-f022-4ad0-b107-0cf6609ee31a.gif"/>
